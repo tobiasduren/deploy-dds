@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalles de Heladera</title>
+
+    <link href="../../css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/estilos.css">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link href="../../css/lib/animate/animate.min.css" rel="stylesheet">
+    <link href="../../css/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="../../css/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+</head>
+
+<body>
+{{> templates/partials/headerColaborador rol=rol id=id}}
+{{> templates/partials/tipografia}}
+
+<main>
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h5 class="section-title ff-secondary text-center text-primary fw-normal">Heladera</h5>
+                <h1 class="mb-5">Detalles de Heladera</h1>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6 wow fadeIn" data-wow-delay="0.4s">
+                    <iframe class="position-relative rounded w-100 h-100"
+                            src="https://www.google.com/maps?q={{heladera.direccion.centro.latitud}},{{heladera.direccion.centro.longitud}}&z=15&output=embed"
+                    frameborder="0" style="min-height: 350px; border:0;" allowfullscreen="" aria-hidden="false"
+                    tabindex="0"></iframe>
+
+                </div>
+                <div class="col-md-6">
+                    <div class="wow fadeInUp" data-wow-delay="0.2s">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <div class="form-floating">
+                                    <p id="IDHeladera" class="form-control">{{heladera.id}}</p>
+                                    <label for="IDHeladera">Heladera</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-floating">
+                                    <p id="estadoHeladera" class="form-control">
+                                        {{#if heladera.abierto}}Abierta{{else}}Cerrada{{/if}}
+                                    </p>
+                                    <label for="estadoHeladera">Estado de Heladera</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-floating">
+                                    <p id="IDHeladera" class="form-control">{{heladera.direccion.calle}}</p>
+                                    <label for="domicilioActual">Calle</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-floating">
+                                    <p id="IDHeladera" class="form-control">{{heladera.direccion.numero}}</p>
+                                    <label for="domicilioActual">Numero</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-floating">
+                                    <p id="IDHeladera" class="form-control">{{heladera.direccion.localidad}}</p>
+                                    <label for="domicilioActual">Localidad</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <p id="capacidadViandas" class="form-control">{{heladera.capacidadDeViandas}}</p>
+                                    <label for="capacidadViandas">Capacidad de Viandas</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <div id="llena" class="form-control">
+                                        <i class="fas {{#if heladera.estaLlena}}fa-check-circle text-success{{else}}fa-times-circle text-danger{{/if}}" style="font-size: 1.5em;"></i>
+                                        {{#if heladera.llena}}Llena{{else}}No Llena{{/if}}
+                                    </div>
+                                    <label for="llena">Esta Llena</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <p id="fechaPuestaEnMarcha" class="form-control">{{heladera.fechaDePuestaEnMarcha}}</p>
+                                    <label for="fechaPuestaEnMarcha">Fecha de Puesta en Marcha</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{#if hayAlerta}}
+                                        <p id="fallas" class="form-control">{{alerta.tipo}}</p>
+                                        <label for="fallas">Alerta actual</label>
+                                    {{/if}}
+                                </div>
+                            </div>
+                        </div>
+
+                        <form class="mt-4" action="/heladeras/{{heladera.id}}/suscribir" method="POST">
+                            <div class="row g-3">
+                                <!-- Selector desplegable para las opciones de suscripción -->
+                                <div class="col-md-12">
+                                    <div class="form-floating">
+                                        <select id="opcionSuscripcion" name="opcionSuscripcion" class="form-select">
+                                            <option value="" disabled selected>Seleccione una opción para suscribirse</option>
+                                            <option value="faltanNViandas">Faltan N viandas para que esté llena</option>
+                                            <option value="quedanNViandas">Quedan N viandas disponibles</option>
+                                            <option value="desperfecto">Suscribirse a desperfectos</option>
+                                        </select>
+                                        <label for="opcionSuscripcion">Opciones de Suscripción</label>
+                                    </div>
+                                </div>
+
+                                <!-- Campo de número para ingresar el valor N, que se muestra solo si es necesario -->
+                                <div class="col-md-12" id="inputNViandas" style="display: none;">
+                                    <div class="form-floating">
+                                        <input type="number" id="numeroViandas" name="numeroViandas" class="form-control" placeholder="Ingrese el número de viandas" min="1" required>
+                                        <label for="numeroViandas">Número de Viandas</label>
+                                    </div>
+                                </div>
+
+                                <!-- Botón de suscribirse -->
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-primary py-2 px-4">Suscribirse</button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="suscripciones mt-4">
+                        {{#each suscriptores}}
+                            <div class="col-md-12">
+                                <div class="d-flex justify-content-between align-items-center form-floating">
+                                    <p id="suscripcion" class="form-control">
+                                        {{this.nombre}}
+                                        <span class="n-viandas" data-suscripcion="{{this.nombre}}" data-n="{{this.n}}" style="display:none;"> - {{this.n}} viandas</span>
+                                    </p>
+                                    <label for="suscripcion">Suscripción</label>
+                                    <form action="/heladeras/{{heladera.id}}/desuscribir" method="POST" class="text-center">
+                                        <input type="hidden" name="heladeraId" value="{{heladera.id}}">
+                                        <input type="hidden" name="idColaborador" value="{{usuario.id}}">
+                                        <button type="submit" class="btn btn-danger ms-2">Desuscribirse</button>
+                                    </form>
+                                </div>
+                            </div>
+                        {{/each}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+{{> templates/main/footer}}
+{{> templates/partials/botonBack}}
+</body>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../../css/lib/wow/wow.min.js"></script>
+<script src="../../css/lib/easing/easing.min.js"></script>
+<script src="../../css/lib/waypoints/waypoints.min.js"></script>
+<script src="../../css/lib/counterup/counterup.min.js"></script>
+<script src="../../css/lib/owlcarousel/owl.carousel.min.js"></script>
+<script src="../../css/lib/tempusdominus/js/moment.min.js"></script>
+<script src="../../css/lib/tempusdominus/js/moment-timezone.min.js"></script>
+<script src="../../css/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+<script src="../../js/scripts-header.js"></script>
+<script src="../../js/main.js"></script>
+
+<script>
+    document.getElementById('opcionSuscripcion').addEventListener('change', function() {
+        var inputNViandas = document.getElementById('inputNViandas');
+        var numeroViandas = document.getElementById('numeroViandas');
+
+        if (this.value === 'faltanNViandas' || this.value === 'quedanNViandas') {
+            inputNViandas.style.display = 'block'; // Mostrar el campo de N viandas si es necesario
+            numeroViandas.setAttribute('required', 'required'); // Añadir required si es necesario
+        } else {
+            inputNViandas.style.display = 'none'; // Ocultar el campo de N viandas si no se necesita
+            numeroViandas.removeAttribute('required'); // Quitar required si no es necesario
+        }
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Iterar sobre cada elemento que tenga la clase .n-viandas
+        document.querySelectorAll('.n-viandas').forEach(function(element) {
+            var suscripcion = element.getAttribute('data-suscripcion');
+            var viandasElement = element;
+
+            // Mostrar si es NViandasDisponibles o FaltanNViandasParaLlenar
+            if (suscripcion === 'Quedan N viandas disponibles' || suscripcion === 'Faltan N viandas para llenar') {
+                viandasElement.style.display = 'inline';
+            }
+        });
+    });
+</script>
+
+</html>
