@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.javalin.http.Context;
 
 public class LoginSSOController extends Controller {
+    private final AdapterGoogleSSO ssoService = new AdapterGoogleSSO(new GoogleAdaptado("636154135246-dejke790q0t6q53ncgtfjc4unuhf4hg6.apps.googleusercontent.com", "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", "http://localhost:7000/oauth/callback"));
     private final RepoPersona repo;
     public LoginSSOController(RepoPersona repoColaborador) {
         this.repo = repoColaborador;
