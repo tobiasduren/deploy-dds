@@ -2,9 +2,13 @@ package Models.Domain.FormasDeContribucion.ContribucionesJuridicas;
 
 import Models.Domain.FormasDeContribucion.Utilidades.Contribucion;
 import Models.Domain.Heladera.Heladera;
+import Models.Repository.RepoContribucion;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Setter
 @Getter
@@ -23,4 +27,12 @@ public class HacerseCargoDeHeladera extends Contribucion {
     public HacerseCargoDeHeladera() {
         this.nombre = "Hacerse cargo de heladera";
     }
+
+    public String getDetalle(){
+        String unDetalle = " ";
+        unDetalle += "Heladera: " + this.getHeladera().getId();
+        return unDetalle;
+    }
+
+
 }

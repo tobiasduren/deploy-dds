@@ -1,14 +1,15 @@
 package Models.Repository;
 
+import Models.Domain.Heladera.Heladera;
 import Models.Domain.Heladera.Incidentes.Alerta;
+import Models.Domain.Heladera.Incidentes.FallaTecnica;
 import Models.Repository.EntityManager.EntityManagerHelper;
 import jakarta.persistence.NoResultException;
 
+import java.util.List;
+
 public class RepoHeladera extends Dao {
 
-    public RepoHeladera(Object type) {
-        super(type);
-    }
 
     public Alerta ultimaAlerta(String id) {
         try {
@@ -23,9 +24,19 @@ public class RepoHeladera extends Dao {
 
     }
 
-    public Object search(Class<?> objeto, String id) {
-        return EntityManagerHelper.getEntityManager().find(objeto,id);
 
+    public List<Heladera> buscarMisHeladeras(Integer idUsuario) {
+        return EntityManagerHelper.getEntityManager()
+                .createQuery("SELECT h FROM Heladera h WHERE h.responsable.id = :idUsuario", Heladera.class)
+                .setParameter("idUsuario", idUsuario)
+                .getResultList();
+    }
+
+    public List<FallaTecnica> buscarFallasPorHeladera(int idHeladera) {
+        return EntityManagerHelper.getEntityManager()
+                .createQuery("SELECT f FROM FallaTecnica f WHERE f.heladera.id = :idHeladera", FallaTecnica.class)
+                .setParameter("idHeladera", idHeladera)
+                .getResultList();
     }
 
 

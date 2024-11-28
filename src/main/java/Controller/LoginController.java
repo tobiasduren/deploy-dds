@@ -1,5 +1,5 @@
 package Controller;
-
+import Service.Validador.Encriptador;
 import Models.Domain.Personas.Actores.Persona;
 import Models.Repository.RepoLogin;
 import Service.Validador.CredencialDeAcceso;
@@ -11,7 +11,7 @@ public class LoginController extends Controller {
     private static final String USER_SESSION_KEY = "usuario";
     private static final String USERNAME_PARAM = "usuario";
     private static final String PASSWORD_PARAM = "password";
-    private RepoLogin repo;
+    private final RepoLogin repo;
 
     public LoginController(RepoLogin repo){
         this.repo =  repo;
@@ -20,7 +20,7 @@ public class LoginController extends Controller {
     public void index(Context context) {
         Persona usuario = context.sessionAttribute(USER_SESSION_KEY);
         if (usuario == null) {
-            context.render("sesion/login.hbs");
+            context.render("Sesion/login.hbs");
         } else {
             String rolTipo = usuario.getTipoUsuario().toString().toLowerCase();
             context.redirect("/index/" + rolTipo);
@@ -34,16 +34,11 @@ public class LoginController extends Controller {
 
         Persona usuario = (Persona) repo.credenciales(new CredencialDeAcceso(nombreUsuario,contrasenia));
 
-        //Agregar mapa para tirar error con handlebars
-        if(usuario == null){
-            context.redirect("/login");
-        }
-        else{
-            context.sessionAttribute(USER_SESSION_KEY, usuario);
-            context.sessionAttribute("idPersona", Integer.toString(usuario.getId()));
-            context.sessionAttribute("rolTipo", usuario.getTipoUsuario().toString());
-            context.redirect("/index/" + usuario.getTipoUsuario().toString().toLowerCase());
-        }
+        context.sessionAttribute(USER_SESSION_KEY, usuario);
+        context.sessionAttribute("idPersona", Integer.toString(usuario.getId()));
+        context.sessionAttribute("rolTipo", usuario.getTipoUsuario().toString());
+        context.redirect("/index/" + usuario.getTipoUsuario().toString().toLowerCase());
+
 
     }
 

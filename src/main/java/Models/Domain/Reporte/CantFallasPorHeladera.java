@@ -15,8 +15,8 @@ import java.util.Arrays;
 public class CantFallasPorHeladera extends TemplateReporte{
 
     public  void obtenerListado() {
-        RepoHeladera repoHeladera = new RepoHeladera(Heladera.class);
-        List<Heladera> heladeras = repoHeladera.buscarTodos();
+        RepoHeladera repoHeladera = new RepoHeladera();
+        List<Heladera> heladeras = repoHeladera.buscarTodos(Heladera.class);
 
         for (Heladera heladera : heladeras) {
             // Concatenar la dirección
@@ -27,11 +27,14 @@ public class CantFallasPorHeladera extends TemplateReporte{
             // Obtener cantidad de fallas
             String cantidadDeFallas = String.valueOf(heladera.getCantidadDeFallas());
 
+            // Obtener id
+            String id = String.valueOf(heladera.getId());
+
             // Restablecer las fallas para la siguiente ejecución
             heladera.reestablecerFallas();
 
             // Agregar a la lista de items en el formato adecuado
-            getItems().add(Arrays.asList(direccion, cantidadDeFallas));
+            getItems().add(Arrays.asList(id,direccion, cantidadDeFallas));
         }
         repoHeladera.agregar(this);
     }

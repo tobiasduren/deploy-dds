@@ -3,8 +3,9 @@ package Models.Domain.Heladera;
 import Models.Domain.Excepciones.HeladeraLlenaException;
 import Models.Domain.Excepciones.SinViandasException;
 import Models.Domain.Heladera.Incidentes.Alerta;
-import Models.Domain.Heladera.Incidentes.Utils.TipoAlerta;
+import Models.Domain.Heladera.Incidentes.Utilidades.TipoAlerta;
 import Models.Domain.Heladera.Suscripciones.*;
+import Models.Domain.Heladera.Suscripciones.Utilidades.TipoDePublicacion;
 import Models.Domain.Personas.Actores.Persona;
 import Models.Domain.Personas.DatosPersonales.Direccion;
 import Models.Domain.Heladera.Sensores.Sensor;
@@ -106,7 +107,7 @@ public class Heladera {
     }
 
     public void agregarVianda(Vianda ... vianda) {
-        if (estaLlena) {
+        if (this.estaLlena) {
             throw new HeladeraLlenaException("Esta llena la heladera");
         }
         registrarViandaDepositada();
@@ -114,25 +115,24 @@ public class Heladera {
         this.capacidadActual --;
         this.registrarViandaDepositada();
         generarNuevaPublicacion(TipoDePublicacion.FALTAN_N_VIANDAS);
-        if ( capacidadDeViandas == viandas.size() ) {
+        if ( this.capacidadActual == 0 ) {
             this.estaLlena = true;
         }
     }
 
 
     public Vianda obtenerVianda() {
-        if (viandas.isEmpty()) {
+        if (this.viandas.isEmpty()) {
             throw new SinViandasException("No hay viandas");
         }
 
-        if (estaLlena) {
-            estaLlena = false;
+        if (this.estaLlena) {
+            this.estaLlena = false;
         }
 
-        Vianda vianda = viandas.remove(0);
-        capacidadActual++;
-
-        sensorMovimiento.chequear();
+        Vianda vianda = this.viandas.remove(0);
+        this.capacidadActual++;
+        this.sensorMovimiento.chequear();
         this.registrarViandaRetirada();
 
         generarNuevaPublicacion(TipoDePublicacion.N_VIANDAS_DISPONIBLES);

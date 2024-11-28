@@ -10,6 +10,7 @@ import Models.Domain.Personas.DatosPersonales.TipoDeDocumento;
 import Models.Domain.Tarjetas.TarjetaAccesos;
 import Models.Repository.RepoPersona;
 
+import Service.Validador.Encriptador;
 import Service.Notificacion.Notificacion;
 import Service.Notificacion.StrategyMedioDeNotificacion;
 import Service.Validador.CredencialDeAcceso;
@@ -19,7 +20,7 @@ import java.util.Map;
 
 public class HumanoController extends Controller  {
 
-    private RepoPersona repo;
+    private final RepoPersona repo;
 
     public HumanoController(RepoPersona repo) {
         this.repo = repo;
@@ -29,7 +30,7 @@ public class HumanoController extends Controller  {
 
     public void create(Context context){
 
-        context.render("persona-humana/registroHumana.hbs");
+        context.render("Persona-humana/registroHumana.hbs");
 
     }
 
@@ -44,10 +45,17 @@ public class HumanoController extends Controller  {
         String numero = context.formParam("numero");
         String localidad = context.formParam("localidad");
         TipoDeDocumento tipoDeDocumento = TipoDeDocumento.valueOf(context.formParam("tipo_documento"));
+        String contrasenia = context.formParam("contrasenia");
+        Encriptador encriptador = new Encriptador();
+
+        // PARA ENCRIPTAR LA CONTRASEÑA
+        //String contraseniaEnciptada = encriptador.encriptarMD5(contraseniaSinEncriptar);
+
+        repo.existeUsuario(context.formParam("nombre_usuario"));
 
         CredencialDeAccesoBuilder credencialDeAccesoBuilder = new CredencialDeAccesoBuilder();
         CredencialDeAcceso credencialDeAcceso = credencialDeAccesoBuilder
-                .contrasenia(context.formParam("contrasenia"))
+                .contrasenia(contrasenia)
                 .nombreUsuario(context.formParam("nombre_usuario"))
                 .construir();
 
@@ -68,7 +76,7 @@ public class HumanoController extends Controller  {
                 .direccion(direccion)
                 .construir();
 
-        Colaborador colaborador = new Colaborador();
+        Colaborador colaborador = new Colaborador(0.0);
         TarjetaAccesos tarjetaAccesos = new TarjetaAccesos(fisico);
         colaborador.setTarjeta(tarjetaAccesos);
         fisico.agregarRol(colaborador);
@@ -90,7 +98,7 @@ public class HumanoController extends Controller  {
         model.put("colaborador", usuario.checkRol(TipoRol.COLABORADOR));
         model.put("tecnico", usuario.checkRol(TipoRol.TECNICO));
 
-        context.render("index-inicio/index_Humana.hbs", model);
+        context.render("Index-inicio/index_Humana.hbs", model);
 
     }
 
@@ -101,7 +109,7 @@ public class HumanoController extends Controller  {
         Map<String, Object> model = this.basicModel(context);
         model.put("humano", model);
 
-        context.render("persona-humana/perfilHumana.hbs", model);
+        context.render("Persona-humana/perfilHumana.hbs", model);
     }
 
 
@@ -112,7 +120,7 @@ public class HumanoController extends Controller  {
         this.asignarParametros(context);
         repo.agregar(this.usuario);
 
-        context.redirect("/index/fisico");
+        context.redirect("/persona/fisico/" + usuario.getId());
     }
 
     public void asignarParametros(Context context){

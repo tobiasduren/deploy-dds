@@ -2,24 +2,30 @@ package Service.Server;
 
 import Controller.*;
 import Controller.Actores.RolUsuario;
-import Controller.Administrador.AdministradorController;
-import Controller.Administrador.HeladeraController;
-import Controller.Administrador.TecnicoController;
+import Controller.AdministradorController;
+import Controller.HeladeraController;
+import Controller.TecnicoController;
+import Models.Repository.RepoPersona;
+import Service.SSO.GoogleAdaptado;
 
 import static io.javalin.apibuilder.ApiBuilder.get;
 import static io.javalin.apibuilder.ApiBuilder.post;
 
 public class Router {
     public static void init(){
-
-        Server.app().get("/",context -> context.render("main/index.hbs"));
+        //Server.app().get("/",context -> context.render("main/index.hbs")); // esto ya esta abajo en controller heladera
         Server.app().get("/contact",context -> context.render("main/Contacto.hbs"));
         Server.app().get("/team",context -> context.render("main/team.hbs"));
         Server.app().get("/about",context -> context.render("main/about.hbs"));
         Server.app().get("/registro",context -> context.render("sesion/registro.hbs"));
-        Server.app().get("/asignar-rol",context -> context.render("asignarRol/asignar-rol.hbs"));
-        Server.app().get("/asignar-rol/tecnico",context -> context.render("asignarRol/solicitud-tecnico.hbs"));
-        Server.app().get("/asignar-rol/solicitudExitosa",context -> context.render("asignarRol/solicitud-enviada.hbs"));
+        Server.app().get("/recuperar",context -> context.render("sesion/recuperar.hbs"));
+
+
+        Server.app().get("/asignar-rol",context -> context.render("Asignar-rol/asignar-rol.hbs"));
+        Server.app().get("/asignar-rol/tecnico",context -> context.render("Asignar-rol/solicitud-tecnico.hbs"));
+        Server.app().get("/asignar-rol/solicitudExitosa",context -> context.render("Asignar-rol/solicitud-enviada.hbs"));
+
+
 
 
         Server.app().get("registro/puntos",((PuntoCercanoController)FactoryController.controller("puntos"))::index,  RolUsuario.ADMINISTRADOR , RolUsuario.JURIDICO);
@@ -34,10 +40,6 @@ public class Router {
 
 
         Server.app().routes(()->{
-            get("/recuperar", ((RecuperarController) FactoryController.controller("recuperar"))::index); //para el olvide mi contrasena
-        });
-
-        Server.app().routes(()->{
             get("/index/juridico", ((JuridicoController) FactoryController.controller("juridico"))::index, RolUsuario.ADMINISTRADOR , RolUsuario.JURIDICO);
             get("/registro/juridico", ((JuridicoController) FactoryController.controller("juridico"))::create);
             post("/registro/juridico", ((JuridicoController) FactoryController.controller("juridico"))::save);
@@ -45,13 +47,16 @@ public class Router {
         });
 
         Server.app().routes(()->{
-            get("/registro/heladera",((HeladeraController) FactoryController.controller("heladeras"))::create, RolUsuario.ADMINISTRADOR);
+            get("/registro/heladera",((HeladeraController) FactoryController.controller("heladeras"))::create, RolUsuario.ADMINISTRADOR, RolUsuario.JURIDICO);
             get("/heladeras",((HeladeraController) FactoryController.controller("heladeras"))::index);
             post("/heladeras/{id}/suscribir",((HeladeraController) FactoryController.controller("heladeras"))::edit);
             post("/heladeras/{id}/desuscribir",((HeladeraController) FactoryController.controller("heladeras"))::update);
             get("/heladeras/{id}",((HeladeraController) FactoryController.controller("heladeras"))::show);
             post("/registro/heladera",((HeladeraController) FactoryController.controller("heladeras"))::save);
-
+            get("/juridico/{id}/mis-heladeras", ((HeladeraController) FactoryController.controller("heladeras"))::mostrarMisHeladeras, RolUsuario.JURIDICO);
+            get("/heladeras/{id}/estado", ((HeladeraController) FactoryController.controller("heladeras"))::mostrarEstadoHeladera);
+            post("/heladeras/{id}/estado", ((HeladeraController) FactoryController.controller("heladeras"))::cambiarEstadoHeladera);
+            get("/", ((HeladeraController) FactoryController.controller("heladeras"))::mostrarCantidadHeladerasActivas);
         });
 
         Server.app().routes(()->{
@@ -72,11 +77,12 @@ public class Router {
 
         Server.app().routes(()->{
             get("/deccosalud",((DeccoSaludController)FactoryController.controller("deccosalud"))::index);
+            post("/deccosalud/detalles",((DeccoSaludController)FactoryController.controller("deccosalud"))::mostrarReporte);
         });
 
         Server.app().routes(()->{
-            get("/tecnico/visita",((VisitaFallaTecnicaController)FactoryController.controller("visitaTecnica"))::create);
-            post("/tecnico/visita",((VisitaFallaTecnicaController)FactoryController.controller("visitaTecnica"))::save);
+            get("/tecnico/visita",((FallaTecnicaController)FactoryController.controller("incidente"))::edit);
+            post("/tecnico/visita",((FallaTecnicaController)FactoryController.controller("incidente"))::update);
         });
 
         Server.app().routes(()->{
@@ -113,6 +119,12 @@ public class Router {
             get("/reportes",((ReporteController)FactoryController.controller("reporte"))::index);
             get("/reportes/listadoReportes",((ReporteController)FactoryController.controller("reporte"))::show);
             post("/reportes/detalles",((ReporteController)FactoryController.controller("reporte"))::reporte);
+        });
+
+
+        Server.app().routes(() -> {
+            get("/sso/login", ((LoginSSOController)FactoryController.controller("loginSSO"))::redirectToSSO);
+           get("/oauth/callback", ((LoginSSOController)FactoryController.controller("loginSSO"))::handleCallback);
         });
 
 

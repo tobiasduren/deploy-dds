@@ -8,7 +8,13 @@ public class AppHandlers {
             new AccessDeniedHandler(),
             new InvalidPasswordHandler(),
             new UnauthorizeHandler(),
-            new NoSuchFieldExceptionHandler()
+            new NoSuchFieldExceptionHandler(),
+            new PuntosInsuficientesHandler(),
+            new HeladeraLlenaHandler(),
+            new CapacidadHeladeraHandler(),
+            new SinViandasHandler(),
+            new UsuarioYaTieneRolHandler(),
+            new UserAlreadyExistsHandler()
     };
 
     public static void applyHandlers(Javalin app) {

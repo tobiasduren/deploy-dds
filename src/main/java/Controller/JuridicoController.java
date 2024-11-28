@@ -8,6 +8,7 @@ import Models.Domain.Personas.Actores.TipoRol;
 import Models.Domain.Personas.DatosPersonales.Direccion;
 import Models.Domain.Personas.Utilidades.TipoJuridico;
 import Models.Repository.RepoPersona;
+import Service.Validador.Encriptador;
 import Service.Server.ICrudViewsHandler;
 import Service.Validador.CredencialDeAcceso;
 import io.javalin.http.Context;
@@ -20,7 +21,7 @@ import java.util.random.RandomGenerator;
 
 public class JuridicoController extends Controller implements ICrudViewsHandler {
 
-    private RepoPersona repo;
+    private final RepoPersona repo;
 
     public JuridicoController(RepoPersona repo) {
         this.repo = repo;
@@ -35,7 +36,7 @@ public class JuridicoController extends Controller implements ICrudViewsHandler 
         model.put("colaborador", usuario.checkRol(TipoRol.COLABORADOR));
         model.put("tecnico", usuario.checkRol(TipoRol.TECNICO));
 
-        context.render("index-inicio/index_Juridica.hbs", model);
+        context.render("Index-inicio/index_Juridica.hbs", model);
     }
 
     @Override
@@ -44,7 +45,7 @@ public class JuridicoController extends Controller implements ICrudViewsHandler 
 
         Map<String, Object> model = this.basicModel(context);
 
-        context.render("persona-Juridica/perfilJuridico.hbs", model);
+        context.render("Persona-Juridica/perfilJuridico.hbs", model);
     }
 
     public void create(Context context){
@@ -59,6 +60,10 @@ public class JuridicoController extends Controller implements ICrudViewsHandler 
         String calle = context.formParam("calle");
         String numero = context.formParam("numero");
         String localidad = context.formParam("localidad");
+        String contrasenia = context.formParam("contrasenia");
+
+        repo.existeUsuario(context.formParam("nombre_usuario"));
+
 
         Direccion direccion = new Direccion();
         direccion.setCalle(calle);
@@ -66,9 +71,12 @@ public class JuridicoController extends Controller implements ICrudViewsHandler 
         direccion.setLocalidad(localidad);
 
 
+        //Encriptador encriptador = new Encriptador();
+        //String contraseniaEcriptada = encriptador.encriptarMD5(contrasenia);
+
         CredencialDeAccesoBuilder credencialDeAccesoBuilder = new CredencialDeAccesoBuilder();
         CredencialDeAcceso credencialDeAcceso = credencialDeAccesoBuilder
-                .contrasenia(context.formParam("contrasenia"))
+                .contrasenia(contrasenia)
                 .nombreUsuario(context.formParam("nombre_usuario"))
                 .construir();
 
@@ -78,7 +86,7 @@ public class JuridicoController extends Controller implements ICrudViewsHandler 
                 .tipoJuridico(tipoJuridico)
                 .correoElectronico(correo)
                 .credencialDeAcceso(credencialDeAcceso)
-                .rol(new Colaborador())
+                .rol(new Colaborador(0.0))
                 .sede(direccion)
                 .construir();
 

@@ -23,8 +23,8 @@ import java.util.List;
 public class MovimientoViandasPorHeladera  extends TemplateReporte{
 
     public  void obtenerListado() {
-        RepoHeladera repoHeladera = new RepoHeladera(Heladera.class);
-        List<Heladera> heladeras = repoHeladera.buscarTodos();
+        RepoHeladera repoHeladera = new RepoHeladera();
+        List<Heladera> heladeras = repoHeladera.buscarTodos(Heladera.class);
 
         for (Heladera heladera : heladeras) {
             String direccion = heladera.getDireccion().getCalle() + " " +
@@ -32,11 +32,12 @@ public class MovimientoViandasPorHeladera  extends TemplateReporte{
                     heladera.getDireccion().getLocalidad();
             String cantidadDeViandasDepositadas = String.valueOf(heladera.getCantidadDeviandasDepositadas());
             String cantidadDeViandasRetiradas = String.valueOf(heladera.getCantidadDeviandasRetiradas());
+            String id = String.valueOf(heladera.getId());
             heladera.reestablecerViandasRetiradas();
             heladera.reestablecerViandasDepositadas();
 
             // Agrega cada fila como una lista de strings
-            getItems().add(Arrays.asList(direccion, cantidadDeViandasDepositadas, cantidadDeViandasRetiradas));
+            getItems().add(Arrays.asList(id, direccion, cantidadDeViandasDepositadas, cantidadDeViandasRetiradas));
         }
         repoHeladera.agregar(this);
 
